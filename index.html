@@ -162,6 +162,174 @@
       { id: 404, numero: "DEV-2024-004", client: "Hydro-Québec", date: "2024-02-03", montant: 1200, statut: "Expirée", validite: "2024-02-03", evenement: "Lunch corporatif - 30 personnes" },
     ];
 
+    const mockRecettes = [
+      {
+        id: 1,
+        nom: "Sandwich au poulet grillé",
+        categorie: "Sandwichs",
+        tempsPrepMin: 15,
+        portions: 1,
+        coutRevient: 4.85,
+        prixSuggere: 12,
+        margePercent: 60,
+        allergenes: ["Gluten", "Moutarde"],
+        ingredients: [
+          { nom: "Pain ciabatta", quantite: 1, unite: "unité", cout: 0.80 },
+          { nom: "Poulet grillé", quantite: 100, unite: "g", cout: 2.50 },
+          { nom: "Laitue", quantite: 20, unite: "g", cout: 0.15 },
+          { nom: "Tomate", quantite: 50, unite: "g", cout: 0.20 },
+          { nom: "Mayonnaise maison", quantite: 30, unite: "ml", cout: 0.45 },
+          { nom: "Fromage suisse", quantite: 30, unite: "g", cout: 0.75 }
+        ],
+        instructions: "1. Griller le pain ciabatta\n2. Assaisonner et griller le poulet\n3. Assembler avec les légumes frais\n4. Ajouter la mayonnaise maison",
+        popularite: 5
+      },
+      {
+        id: 2,
+        nom: "Salade César classique",
+        categorie: "Salades",
+        tempsPrepMin: 10,
+        portions: 1,
+        coutRevient: 3.25,
+        prixSuggere: 8.50,
+        margePercent: 62,
+        allergenes: ["Œufs", "Poisson", "Lait", "Gluten"],
+        ingredients: [
+          { nom: "Laitue romaine", quantite: 150, unite: "g", cout: 0.80 },
+          { nom: "Vinaigrette César", quantite: 60, unite: "ml", cout: 0.95 },
+          { nom: "Croûtons maison", quantite: 30, unite: "g", cout: 0.25 },
+          { nom: "Parmesan râpé", quantite: 30, unite: "g", cout: 0.85 },
+          { nom: "Bacon croustillant", quantite: 30, unite: "g", cout: 0.40 }
+        ],
+        instructions: "1. Laver et couper la laitue\n2. Préparer la vinaigrette César\n3. Mélanger délicatement\n4. Garnir de croûtons, parmesan et bacon",
+        popularite: 4
+      },
+      {
+        id: 3,
+        nom: "Boîte à lunch végétarienne deluxe",
+        categorie: "Boîtes à lunch",
+        tempsPrepMin: 25,
+        portions: 1,
+        coutRevient: 6.15,
+        prixSuggere: 16,
+        margePercent: 62,
+        allergenes: ["Gluten", "Noix", "Sésame"],
+        ingredients: [
+          { nom: "Quinoa cuit", quantite: 150, unite: "g", cout: 1.20 },
+          { nom: "Légumes grillés", quantite: 200, unite: "g", cout: 2.10 },
+          { nom: "Houmous maison", quantite: 60, unite: "g", cout: 0.85 },
+          { nom: "Fromage feta", quantite: 40, unite: "g", cout: 0.90 },
+          { nom: "Pain pita", quantite: 1, unite: "unité", cout: 0.45 },
+          { nom: "Salade verte", quantite: 50, unite: "g", cout: 0.35 },
+          { nom: "Vinaigrette balsamique", quantite: 30, unite: "ml", cout: 0.30 }
+        ],
+        instructions: "1. Cuire le quinoa et laisser refroidir\n2. Griller les légumes au four\n3. Préparer le houmous\n4. Assembler dans la boîte compartimentée",
+        popularite: 4
+      },
+      {
+        id: 4,
+        nom: "Plateau de viennoiseries artisanales",
+        categorie: "Pâtisseries",
+        tempsPrepMin: 180,
+        portions: 10,
+        coutRevient: 12.50,
+        prixSuggere: 38,
+        margePercent: 67,
+        allergenes: ["Gluten", "Œufs", "Lait", "Noix"],
+        ingredients: [
+          { nom: "Croissants pur beurre", quantite: 4, unite: "unités", cout: 4.00 },
+          { nom: "Pains au chocolat", quantite: 3, unite: "unités", cout: 3.75 },
+          { nom: "Chaussons aux pommes", quantite: 3, unite: "unités", cout: 4.50 },
+          { nom: "Garniture décorative", quantite: 1, unite: "lot", cout: 0.25 }
+        ],
+        instructions: "1. Préparer les pâtes la veille\n2. Façonner et laisser lever\n3. Cuire au four à 180°C\n4. Disposer sur plateau avec décoration",
+        popularite: 5
+      },
+      {
+        id: 5,
+        nom: "Soupe minestrone maison",
+        categorie: "Soupes",
+        tempsPrepMin: 45,
+        portions: 10,
+        coutRevient: 8.90,
+        prixSuggere: 18,
+        margePercent: 51,
+        allergenes: ["Céleri", "Gluten"],
+        ingredients: [
+          { nom: "Tomates concassées", quantite: 400, unite: "g", cout: 1.20 },
+          { nom: "Haricots blancs", quantite: 200, unite: "g", cout: 0.80 },
+          { nom: "Légumes mélangés", quantite: 500, unite: "g", cout: 2.50 },
+          { nom: "Pâtes courtes", quantite: 150, unite: "g", cout: 0.60 },
+          { nom: "Bouillon de légumes", quantite: 1.5, unite: "L", cout: 1.80 },
+          { nom: "Herbes fraîches", quantite: 30, unite: "g", cout: 1.00 },
+          { nom: "Huile d'olive", quantite: 50, unite: "ml", cout: 1.00 }
+        ],
+        instructions: "1. Faire revenir les légumes dans l'huile\n2. Ajouter tomates et bouillon\n3. Mijoter 30 minutes\n4. Ajouter pâtes et herbes en fin de cuisson",
+        popularite: 3
+      },
+      {
+        id: 6,
+        nom: "Plateau de fruits de saison",
+        categorie: "Plateaux",
+        tempsPrepMin: 20,
+        portions: 15,
+        coutRevient: 22.75,
+        prixSuggere: 55,
+        margePercent: 59,
+        allergenes: [],
+        ingredients: [
+          { nom: "Fraises fraîches", quantite: 500, unite: "g", cout: 6.00 },
+          { nom: "Raisins verts", quantite: 400, unite: "g", cout: 4.80 },
+          { nom: "Melons", quantite: 600, unite: "g", cout: 3.60 },
+          { nom: "Ananas frais", quantite: 500, unite: "g", cout: 4.00 },
+          { nom: "Bleuets", quantite: 200, unite: "g", cout: 3.60 },
+          { nom: "Menthe fraîche", quantite: 10, unite: "g", cout: 0.75 }
+        ],
+        instructions: "1. Laver tous les fruits\n2. Couper en portions appropriées\n3. Disposer artistiquement sur plateau\n4. Garnir de menthe fraîche",
+        popularite: 4
+      },
+      {
+        id: 7,
+        nom: "Quiche lorraine traditionnelle",
+        categorie: "Plats chauds",
+        tempsPrepMin: 60,
+        portions: 8,
+        coutRevient: 8.95,
+        prixSuggere: 24,
+        margePercent: 63,
+        allergenes: ["Gluten", "Œufs", "Lait", "Porc"],
+        ingredients: [
+          { nom: "Pâte brisée", quantite: 300, unite: "g", cout: 1.80 },
+          { nom: "Lardons fumés", quantite: 200, unite: "g", cout: 3.20 },
+          { nom: "Œufs", quantite: 4, unite: "unités", cout: 1.00 },
+          { nom: "Crème 35%", quantite: 300, unite: "ml", cout: 2.10 },
+          { nom: "Fromage gruyère", quantite: 100, unite: "g", cout: 0.85 }
+        ],
+        instructions: "1. Étaler la pâte dans un moule\n2. Faire revenir les lardons\n3. Battre œufs et crème\n4. Cuire 35-40 min à 180°C",
+        popularite: 5
+      },
+      {
+        id: 8,
+        nom: "Wrap végétalien aux légumes grillés",
+        categorie: "Sandwichs",
+        tempsPrepMin: 20,
+        portions: 1,
+        coutRevient: 3.45,
+        prixSuggere: 10,
+        margePercent: 66,
+        allergenes: ["Gluten", "Sésame"],
+        ingredients: [
+          { nom: "Tortilla de blé entier", quantite: 1, unite: "unité", cout: 0.65 },
+          { nom: "Légumes grillés assortis", quantite: 150, unite: "g", cout: 1.80 },
+          { nom: "Houmous", quantite: 60, unite: "g", cout: 0.60 },
+          { nom: "Épinards frais", quantite: 30, unite: "g", cout: 0.25 },
+          { nom: "Tahini", quantite: 20, unite: "ml", cout: 0.15 }
+        ],
+        instructions: "1. Griller les légumes au four\n2. Étaler le houmous sur la tortilla\n3. Ajouter légumes et épinards\n4. Rouler serré et couper en diagonale",
+        popularite: 3
+      }
+    ];
+
     // Icônes SVG inline
     const Icons = {
       Dashboard: () => (
@@ -227,6 +395,11 @@
       Close: () => (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      ),
+      Book: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       ),
     };
@@ -299,6 +472,7 @@
         { id: 'clients', label: 'Clients', icon: Icons.Users },
         { id: 'commandes', label: 'Commandes', icon: Icons.Cart },
         { id: 'produits', label: 'Produits', icon: Icons.Box },
+        { id: 'recettes', label: 'Recettes', icon: Icons.Book },
         { id: 'evenements', label: 'Événements', icon: Icons.Calendar },
         { id: 'inventaire', label: 'Inventaire', icon: Icons.Inventory },
         { id: 'factures', label: 'Factures', icon: Icons.Invoice },
@@ -372,12 +546,12 @@
               <Card className="p-6 animate-fade-in-up" style={{animationDelay: '300ms'}}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[#666666] text-sm font-body">Taux conversion</p>
-                    <p className="text-2xl font-bold text-gray-100 mt-1">68%</p>
-                    <p className="text-xs text-green-400 mt-1">+5% ce mois</p>
+                    <p className="text-[#666666] text-sm font-body">Recettes actives</p>
+                    <p className="text-2xl font-bold text-gray-100 mt-1">{mockRecettes.length}</p>
+                    <p className="text-xs text-[#666666] mt-1">Marge moy: 61%</p>
                   </div>
                   <div className="w-12 h-12 bg-[#000000] flex items-center justify-center">
-                    <span className="text-gray-100 text-xl font-bold">%</span>
+                    <Icons.Book />
                   </div>
                 </div>
               </Card>
@@ -445,33 +619,67 @@
               </Card>
             </div>
 
-            {/* Activité récente */}
-            <Card className="p-6">
-              <h3 className="text-lg font-display font-semibold text-gray-100 mb-4">Activité récente</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                  <div>
-                    <p className="text-gray-100 font-medium">Nouvelle commande - Restaurant Chez Michel</p>
-                    <p className="text-sm text-[#666666]">Il y a 15 minutes</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Activité récente */}
+              <Card className="p-6">
+                <h3 className="text-lg font-display font-semibold text-gray-100 mb-4">Activité récente</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between py-2 border-b border-gray-700">
+                    <div>
+                      <p className="text-gray-100 font-medium">Nouvelle commande - Restaurant Chez Michel</p>
+                      <p className="text-sm text-[#666666]">Il y a 15 minutes</p>
+                    </div>
+                    <span className="text-green-400 font-medium">+1 250 $</span>
                   </div>
-                  <span className="text-green-400 font-medium">+1 250 $</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                  <div>
-                    <p className="text-gray-100 font-medium">Soumission acceptée - Université Laval</p>
-                    <p className="text-sm text-[#666666]">Il y a 2 heures</p>
+                  <div className="flex items-center justify-between py-2 border-b border-gray-700">
+                    <div>
+                      <p className="text-gray-100 font-medium">Soumission acceptée - Université Laval</p>
+                      <p className="text-sm text-[#666666]">Il y a 2 heures</p>
+                    </div>
+                    <span className="text-green-400 font-medium">+2 800 $</span>
                   </div>
-                  <span className="text-green-400 font-medium">+2 800 $</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                  <div>
-                    <p className="text-gray-100 font-medium">Livraison complétée - Épicerie Gagnon</p>
-                    <p className="text-sm text-[#666666]">Il y a 3 heures</p>
+                  <div className="flex items-center justify-between py-2 border-b border-gray-700">
+                    <div>
+                      <p className="text-gray-100 font-medium">Livraison complétée - Épicerie Gagnon</p>
+                      <p className="text-sm text-[#666666]">Il y a 3 heures</p>
+                    </div>
+                    <span className="text-[#666666]">CMD-2024-004</span>
                   </div>
-                  <span className="text-[#666666]">CMD-2024-004</span>
                 </div>
-              </div>
-            </Card>
+              </Card>
+
+              {/* Recettes populaires */}
+              <Card className="p-6">
+                <h3 className="text-lg font-display font-semibold text-gray-100 mb-4">Recettes populaires</h3>
+                <div className="space-y-3">
+                  {mockRecettes.slice(0, 3).sort((a, b) => b.popularite - a.popularite).map((recette) => (
+                    <div key={recette.id} className="flex items-center justify-between py-2 border-b border-gray-700">
+                      <div>
+                        <p className="text-gray-100 font-medium">{recette.nom}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <span key={i} className={`text-xs ${i < recette.popularite ? 'text-yellow-500' : 'text-gray-600'}`}>★</span>
+                            ))}
+                          </div>
+                          <span className="text-sm text-[#666666]">• {recette.categorie}</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-gray-100 font-medium">{recette.prixSuggere.toFixed(2)} $</p>
+                        <p className="text-xs text-green-400">{recette.margePercent}% marge</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setActiveTab('recettes')}
+                  className="mt-4 text-sm text-[#666666] hover:text-gray-100 font-medium transition-colors"
+                >
+                  Voir toutes les recettes →
+                </button>
+              </Card>
+            </div>
           </div>
         );
       }
@@ -799,13 +1007,13 @@
 
         if (!commande) return <div className="text-gray-100">Commande non trouvée</div>;
 
-        // Simulation d'articles de la commande
+        // Simulation d'articles de la commande avec recettes
         const articles = [
-          { id: 1, nom: "Plateau de sandwichs assortis", quantite: 2, prixUnitaire: 45, total: 90 },
-          { id: 2, nom: "Salade César", quantite: 20, prixUnitaire: 8.50, total: 170 },
-          { id: 3, nom: "Plateau de fruits frais", quantite: 1, prixUnitaire: 55, total: 55 },
-          { id: 4, nom: "Boîte à lunch végétarienne", quantite: 15, prixUnitaire: 16, total: 240 },
-          { id: 5, nom: "Livraison", quantite: 1, prixUnitaire: 35, total: 35 },
+          { id: 1, nom: "Plateau de sandwichs assortis", quantite: 2, prixUnitaire: 45, total: 90, type: "produit" },
+          { id: 2, nom: "Salade César classique", quantite: 20, prixUnitaire: 8.50, total: 170, type: "recette" },
+          { id: 3, nom: "Plateau de fruits de saison", quantite: 1, prixUnitaire: 55, total: 55, type: "recette" },
+          { id: 4, nom: "Boîte à lunch végétarienne deluxe", quantite: 15, prixUnitaire: 16, total: 240, type: "recette" },
+          { id: 5, nom: "Livraison", quantite: 1, prixUnitaire: 35, total: 35, type: "service" },
         ];
 
         return (
@@ -905,7 +1113,14 @@
                   <tbody className="divide-y divide-gray-700">
                     {articles.map(article => (
                       <tr key={article.id}>
-                        <td className="py-3 text-gray-100">{article.nom}</td>
+                        <td className="py-3 text-gray-100">
+                          <div className="flex items-center gap-2">
+                            {article.nom}
+                            {article.type === 'recette' && (
+                              <span className="bg-[#000000] text-white px-2 py-0.5 text-xs font-semibold">Recette</span>
+                            )}
+                          </div>
+                        </td>
                         <td className="py-3 text-center text-gray-100">{article.quantite}</td>
                         <td className="py-3 text-right text-gray-100">{article.prixUnitaire.toFixed(2)} $</td>
                         <td className="py-3 text-right font-medium text-gray-100">{article.total.toFixed(2)} $</td>
@@ -1043,6 +1258,459 @@
                     className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
                     placeholder="Instructions spéciales, allergènes, etc."
                   ></textarea>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="submit"
+                    className="bg-[#000000] hover:bg-[#333333] text-white px-6 py-2 font-body font-medium transition-colors"
+                  >
+                    Enregistrer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 font-body font-medium transition-colors"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            </Card>
+          </div>
+        );
+      }
+
+      // Composant Liste des Recettes
+      function RecetteList({ onSelect, onCreate }) {
+        const filteredRecettes = mockRecettes.filter(recette =>
+          recette.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          recette.categorie.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          recette.ingredients.some(ing => ing.nom.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
+
+        return (
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <h1 className="text-3xl font-display font-bold text-gray-100">Recettes</h1>
+              <button
+                onClick={onCreate}
+                className="bg-[#000000] hover:bg-[#333333] text-white px-6 py-2 font-body font-medium transition-colors flex items-center gap-2"
+              >
+                <Icons.Plus />
+                Nouvelle recette
+              </button>
+            </div>
+
+            <Card className="overflow-hidden">
+              <div className="p-4 border-b border-gray-700">
+                <div className="relative">
+                  <Icons.Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#666666]" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher une recette..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-gray-700 text-gray-100 pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000] font-body"
+                  />
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-700 text-left">
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Recette</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider hidden md:table-cell">Catégorie</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Coût</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Prix</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider hidden lg:table-cell">Marge</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {filteredRecettes.map(recette => (
+                      <tr
+                        key={recette.id}
+                        onClick={() => onSelect(recette.id)}
+                        className="hover:bg-gray-700 cursor-pointer transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="text-gray-100 font-medium">{recette.nom}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-[#666666]">{recette.portions} portion(s)</span>
+                              <span className="text-xs text-[#666666]">•</span>
+                              <span className="text-xs text-[#666666]">{recette.tempsPrepMin} min</span>
+                              <span className="text-xs text-[#666666]">•</span>
+                              <div className="flex">
+                                {[...Array(5)].map((_, i) => (
+                                  <span key={i} className={`text-xs ${i < recette.popularite ? 'text-yellow-500' : 'text-gray-600'}`}>★</span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 hidden md:table-cell">
+                          <span className="bg-gray-600 text-gray-100 px-2 py-1 text-xs font-semibold">
+                            {recette.categorie}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-gray-100">{recette.coutRevient.toFixed(2)} $</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-gray-100 font-medium">{recette.prixSuggere.toFixed(2)} $</p>
+                        </td>
+                        <td className="px-6 py-4 hidden lg:table-cell">
+                          <span className={`font-semibold ${recette.margePercent >= 60 ? 'text-green-400' : 'text-orange-400'}`}>
+                            {recette.margePercent}%
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); goToEdit('recette', recette.id); }}
+                            className="text-[#666666] hover:text-gray-100 font-medium transition-colors"
+                          >
+                            Modifier
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        );
+      }
+
+      // Composant Détail Recette
+      function RecetteDetail({ recetteId, onBack, onEdit }) {
+        const recette = mockRecettes.find(r => r.id === recetteId);
+        if (!recette) return <div className="text-gray-100">Recette non trouvée</div>;
+
+        const totalCoutIngredients = recette.ingredients.reduce((sum, ing) => sum + ing.cout, 0);
+
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <BackButton onClick={onBack} label="Retour aux recettes" />
+
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-display font-bold text-gray-100">{recette.nom}</h1>
+                <div className="flex items-center gap-4 mt-2">
+                  <span className="bg-gray-600 text-gray-100 px-2 py-1 text-sm font-semibold">{recette.categorie}</span>
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className={`text-lg ${i < recette.popularite ? 'text-yellow-500' : 'text-gray-600'}`}>★</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onEdit(recette.id)}
+                  className="bg-[#000000] hover:bg-[#333333] text-white px-6 py-2 font-body font-medium transition-colors"
+                >
+                  Modifier
+                </button>
+                <button className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 font-body font-medium transition-colors">
+                  Dupliquer
+                </button>
+                <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 font-body font-medium transition-colors">
+                  Supprimer
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="p-6">
+                <h3 className="font-display font-semibold text-gray-100 mb-4">Informations générales</h3>
+                <dl className="space-y-3">
+                  <div>
+                    <dt className="text-sm text-[#666666]">Temps de préparation</dt>
+                    <dd className="text-gray-100 font-medium">{recette.tempsPrepMin} minutes</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Portions</dt>
+                    <dd className="text-gray-100">{recette.portions}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Catégorie</dt>
+                    <dd className="text-gray-100">{recette.categorie}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Allergènes</dt>
+                    <dd>
+                      {recette.allergenes.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {recette.allergenes.map((allergene, idx) => (
+                            <span key={idx} className="bg-red-600 text-white px-2 py-1 text-xs font-semibold">
+                              {allergene}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-100">Aucun</span>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="font-display font-semibold text-gray-100 mb-4">Analyse financière</h3>
+                <dl className="space-y-3">
+                  <div>
+                    <dt className="text-sm text-[#666666]">Coût de revient</dt>
+                    <dd className="text-2xl font-bold text-gray-100">{recette.coutRevient.toFixed(2)} $</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Prix suggéré</dt>
+                    <dd className="text-xl font-semibold text-gray-100">{recette.prixSuggere.toFixed(2)} $</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Marge bénéficiaire</dt>
+                    <dd>
+                      <span className={`text-xl font-bold ${recette.margePercent >= 60 ? 'text-green-400' : 'text-orange-400'}`}>
+                        {recette.margePercent}%
+                      </span>
+                      <span className="text-sm text-[#666666] ml-2">
+                        ({(recette.prixSuggere - recette.coutRevient).toFixed(2)} $)
+                      </span>
+                    </dd>
+                  </div>
+                </dl>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="font-display font-semibold text-gray-100 mb-4">Performance</h3>
+                <dl className="space-y-3">
+                  <div>
+                    <dt className="text-sm text-[#666666]">Popularité</dt>
+                    <dd>
+                      <div className="flex items-center gap-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <span key={i} className={`text-xl ${i < recette.popularite ? 'text-yellow-500' : 'text-gray-600'}`}>★</span>
+                          ))}
+                        </div>
+                        <span className="text-gray-100">{recette.popularite}/5</span>
+                      </div>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Ventes ce mois</dt>
+                    <dd className="text-gray-100 font-medium">127 portions</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Revenus générés</dt>
+                    <dd className="text-gray-100 font-medium">1 524,00 $</dd>
+                  </div>
+                </dl>
+              </Card>
+            </div>
+
+            <Card className="p-6">
+              <h3 className="font-display font-semibold text-gray-100 mb-4">Ingrédients</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-700">
+                      <th className="text-left py-2 text-sm font-medium text-[#666666]">Ingrédient</th>
+                      <th className="text-center py-2 text-sm font-medium text-[#666666]">Quantité</th>
+                      <th className="text-right py-2 text-sm font-medium text-[#666666]">Coût unitaire</th>
+                      <th className="text-right py-2 text-sm font-medium text-[#666666]">Coût total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {recette.ingredients.map((ing, idx) => (
+                      <tr key={idx}>
+                        <td className="py-3 text-gray-100">{ing.nom}</td>
+                        <td className="py-3 text-center text-gray-100">{ing.quantite} {ing.unite}</td>
+                        <td className="py-3 text-right text-gray-100">-</td>
+                        <td className="py-3 text-right font-medium text-gray-100">{ing.cout.toFixed(2)} $</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-gray-700 font-semibold">
+                      <td colSpan="3" className="py-3 text-right text-gray-100">Coût total des ingrédients</td>
+                      <td className="py-3 text-right text-gray-100">{totalCoutIngredients.toFixed(2)} $</td>
+                    </tr>
+                    <tr>
+                      <td colSpan="3" className="py-2 text-right text-[#666666]">Main d'œuvre et frais généraux</td>
+                      <td className="py-2 text-right text-gray-100">{(recette.coutRevient - totalCoutIngredients).toFixed(2)} $</td>
+                    </tr>
+                    <tr className="text-lg font-bold">
+                      <td colSpan="3" className="py-3 text-right text-gray-100">Coût de revient total</td>
+                      <td className="py-3 text-right text-gray-100">{recette.coutRevient.toFixed(2)} $</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-display font-semibold text-gray-100 mb-4">Instructions de préparation</h3>
+              <div className="prose prose-invert max-w-none">
+                <pre className="whitespace-pre-wrap text-gray-100 font-body">{recette.instructions}</pre>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-display font-semibold text-gray-100 mb-4">Utilisation dans les commandes récentes</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2 border-b border-gray-700">
+                  <div>
+                    <p className="text-gray-100 font-medium">CMD-2024-001 - Restaurant Chez Michel</p>
+                    <p className="text-sm text-[#666666]">2024-02-03 - 5 portions</p>
+                  </div>
+                  <span className="text-gray-100">60,00 $</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-gray-700">
+                  <div>
+                    <p className="text-gray-100 font-medium">CMD-2024-005 - Café du Coin</p>
+                    <p className="text-sm text-[#666666]">2024-02-04 - 10 portions</p>
+                  </div>
+                  <span className="text-gray-100">120,00 $</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        );
+      }
+
+      // Composant Édition Recette
+      function RecetteEdit({ recetteId, onBack, onSave }) {
+        const recette = mockRecettes.find(r => r.id === recetteId);
+
+        const [formData, setFormData] = React.useState({
+          nom: recette?.nom || '',
+          categorie: recette?.categorie || '',
+          tempsPrepMin: recette?.tempsPrepMin || '',
+          portions: recette?.portions || 1,
+          prixSuggere: recette?.prixSuggere || '',
+          instructions: recette?.instructions || '',
+        });
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          alert('Recette mise à jour avec succès!');
+          onSave();
+        };
+
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <BackButton onClick={onBack} label="Retour au détail" />
+
+            <div>
+              <h1 className="text-3xl font-display font-bold text-gray-100">
+                {recette ? `Modifier ${recette.nom}` : 'Nouvelle recette'}
+              </h1>
+            </div>
+
+            <Card className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-2">Nom de la recette</label>
+                    <input
+                      type="text"
+                      value={formData.nom}
+                      onChange={(e) => setFormData({...formData, nom: e.target.value})}
+                      className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-2">Catégorie</label>
+                    <select
+                      value={formData.categorie}
+                      onChange={(e) => setFormData({...formData, categorie: e.target.value})}
+                      className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                      required
+                    >
+                      <option value="">Sélectionner...</option>
+                      <option value="Sandwichs">Sandwichs</option>
+                      <option value="Salades">Salades</option>
+                      <option value="Boîtes à lunch">Boîtes à lunch</option>
+                      <option value="Plateaux">Plateaux</option>
+                      <option value="Soupes">Soupes</option>
+                      <option value="Plats chauds">Plats chauds</option>
+                      <option value="Pâtisseries">Pâtisseries</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-2">Temps de préparation (minutes)</label>
+                    <input
+                      type="number"
+                      value={formData.tempsPrepMin}
+                      onChange={(e) => setFormData({...formData, tempsPrepMin: e.target.value})}
+                      className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                      required
+                      min="1"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-2">Portions</label>
+                    <input
+                      type="number"
+                      value={formData.portions}
+                      onChange={(e) => setFormData({...formData, portions: e.target.value})}
+                      className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                      required
+                      min="1"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-2">Prix suggéré ($)</label>
+                    <input
+                      type="number"
+                      value={formData.prixSuggere}
+                      onChange={(e) => setFormData({...formData, prixSuggere: e.target.value})}
+                      className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                      required
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-display font-semibold text-gray-100 mb-4">Ingrédients</h3>
+                  <p className="text-[#666666] mb-4">La gestion des ingrédients sera disponible dans une prochaine version</p>
+                  {recette && (
+                    <div className="bg-gray-800 border border-gray-700 p-4 space-y-2">
+                      {recette.ingredients.map((ing, idx) => (
+                        <div key={idx} className="flex justify-between text-sm">
+                          <span className="text-gray-100">{ing.nom}</span>
+                          <span className="text-[#666666]">{ing.quantite} {ing.unite}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#666666] mb-2">Instructions de préparation</label>
+                  <textarea
+                    rows="6"
+                    value={formData.instructions}
+                    onChange={(e) => setFormData({...formData, instructions: e.target.value})}
+                    className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000] font-body"
+                    placeholder="1. Étape 1&#10;2. Étape 2&#10;3. ..."
+                  ></textarea>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#666666] mb-2">Allergènes</label>
+                  <p className="text-[#666666]">La gestion des allergènes sera disponible dans une prochaine version</p>
                 </div>
 
                 <div className="flex gap-4 pt-4">
@@ -1263,6 +1931,32 @@
                     )},
                   ]}
                 />
+              )}
+
+              {/* Recettes avec navigation 5 niveaux */}
+              {activeTab === 'recettes' && (
+                <>
+                  {view.screen === 'list' && (
+                    <RecetteList
+                      onSelect={(id) => goToDetail('recette', id)}
+                      onCreate={() => alert('Création de recette')}
+                    />
+                  )}
+                  {view.screen === 'detail' && view.entityType === 'recette' && (
+                    <RecetteDetail
+                      recetteId={view.entityId}
+                      onBack={() => goToList('recette')}
+                      onEdit={(id) => goToEdit('recette', id)}
+                    />
+                  )}
+                  {view.screen === 'edit' && view.entityType === 'recette' && (
+                    <RecetteEdit
+                      recetteId={view.entityId}
+                      onBack={() => goToDetail('recette', view.entityId)}
+                      onSave={() => goToDetail('recette', view.entityId)}
+                    />
+                  )}
+                </>
               )}
 
               {/* Événements */}
