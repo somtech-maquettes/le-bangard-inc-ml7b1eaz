@@ -1,0 +1,29 @@
+{
+  "job_id": "39d3694d-abce-4c73-9512-5c66ed899ed2",
+  "client_name": "Le Bangard Inc.",
+  "created_at": "2026-02-04T00:44:04.569Z",
+  "design_direction": {
+    "id": "client-charte",
+    "name": "Charte Le Bangard Inc.",
+    "palette": {
+      "accent": "[#000000]",
+      "bg": "bg-gray-900",
+      "surface": "bg-gray-800",
+      "text": "text-gray-100",
+      "muted": "[#666666]"
+    },
+    "fonts": {
+      "display": "Quattrocento",
+      "body": "Quattrocento",
+      "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;500;600;700&display=swap"
+    }
+  },
+  "user_responses": [
+    {
+      "question_id": "2a401984-a493-413b-9c45-2a9e6ddcf686",
+      "value": null,
+      "is_default": true
+    }
+  ],
+  "modifications": []
+}

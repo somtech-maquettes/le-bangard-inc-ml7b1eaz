@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maquette</title>
+
+  <!-- Google Fonts selon le Design Brief -->
+  <link href="https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet CSS (pour cartes si nécessaire) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Polices du Design Brief */
+    .font-display { font-family: 'Quattrocento', serif; }
+    .font-body { font-family: 'Quattrocento', sans-serif; }
+
+    /* Appliquer la police body par défaut */
+    body { font-family: 'Quattrocento', sans-serif; }
+
+    /* Animation de base pour les entrées */
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up {
+      animation: fade-in-up 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    /* Animation de fade simple */
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.3s ease-out forwards;
+    }
+
+    /* Animation scale */
+    @keyframes scale-in {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-scale-in {
+      animation: scale-in 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- CHARGEMENT SÉQUENTIEL DES CDN - NE PAS MODIFIER -->
+  <script>
+    (function() {
+      var scripts = [
+        'https://unpkg.com/react@18/umd/react.production.min.js',
+        'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
+        'https://unpkg.com/prop-types@15/prop-types.min.js',
+        'https://unpkg.com/recharts@2.12.7/umd/Recharts.js',
+        'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+        'https://unpkg.com/@babel/standalone/babel.min.js'
+      ];
+      var index = 0;
+      function loadNext() {
+        if (index >= scripts.length) {
+          if (typeof Babel !== 'undefined' && Babel.transformScriptTags) {
+            Babel.transformScriptTags();
+          }
+          return;
+        }
+        var script = document.createElement('script');
+        script.src = scripts[index];
+        script.onload = function() { index++; loadNext(); };
+        script.onerror = function() { console.error('Erreur CDN: ' + scripts[index]); };
+        document.body.appendChild(script);
+      }
+      loadNext();
+    })();
+  </script>
+
+  <script type="text/babel">
+    // OBLIGATOIRE: Destructurer Recharts (NE PAS SUPPRIMER)
+    const { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area,
+            XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+
+    // ============================================================
+    // CLAUDE: CRÉE TON APPLICATION CI-DESSOUS
+    // Utilise les couleurs et effets du Design Brief
+    // ============================================================
+
+    // =============================================================================
+    // APPLICATION POUR LE BANGARD INC. - LABORATOIRE ALIMENTAIRE
+    // =============================================================================
+
+    // Données mockées québécoises pour le traiteur
+    const mockClients = [
+      { id: 1, nom: "Restaurant Chez Michel", contact: "Michel Tremblay", email: "michel@chezmichel.ca", telephone: "514-555-0101", adresse: "1234 Rue Sainte-Catherine, Montréal", type: "B2B", credit: 15000, solde: 2450 },
+      { id: 2, nom: "Hôtel Le Château", contact: "Marie Lavoie", email: "evenements@lechateau.ca", telephone: "514-555-0102", adresse: "567 Boulevard René-Lévesque, Montréal", type: "B2B", credit: 25000, solde: 8900 },
+      { id: 3, nom: "Épicerie Gagnon et Fils", contact: "Pierre Gagnon", email: "pgagnon@epiceriegagnon.ca", telephone: "514-555-0103", adresse: "890 Avenue Mont-Royal, Montréal", type: "B2B", credit: 10000, solde: 0 },
+      { id: 4, nom: "Sophie Bouchard", contact: "Sophie Bouchard", email: "sophie.b@gmail.com", telephone: "514-555-0104", adresse: "321 Rue Sherbrooke, Montréal", type: "B2C", credit: 0, solde: 0 },
+      { id: 5, nom: "Café du Coin", contact: "Jean-François Roy", email: "jf@cafeducoin.ca", telephone: "514-555-0105", adresse: "456 Rue Saint-Denis, Montréal", type: "B2B", credit: 5000, solde: 1200 },
+    ];
+
+    const mockCommandes = [
+      { id: 101, clientId: 1, numero: "CMD-2024-001", date: "2024-02-03", statut: "En production", montant: 1250, items: 5, livraison: "2024-02-05 11:00", evenement: "Service traiteur midi" },
+      { id: 102, clientId: 1, numero: "CMD-2024-002", date: "2024-02-02", statut: "Livrée", montant: 850, items: 3, livraison: "2024-02-03 18:00", evenement: "Cocktail corporatif" },
+      { id: 103, clientId: 2, numero: "CMD-2024-003", date: "2024-02-01", statut: "En préparation", montant: 3200, items: 12, livraison: "2024-02-06 17:00", evenement: "Banquet 80 personnes" },
+      { id: 104, clientId: 3, numero: "CMD-2024-004", date: "2024-01-30", statut: "Livrée", montant: 450, items: 2, livraison: "2024-02-01 09:00", evenement: "Commande hebdomadaire" },
+      { id: 105, clientId: 5, numero: "CMD-2024-005", date: "2024-02-04", statut: "Nouvelle", montant: 320, items: 2, livraison: "2024-02-05 07:00", evenement: "Viennoiseries et sandwichs" },
+    ];
+
+    const mockProduits = [
+      { id: 1, nom: "Plateau de sandwichs assortis", categorie: "Plateaux", prix: 45, unite: "plateau", stock: 12, allergenes: ["Gluten", "Œufs", "Moutarde"] },
+      { id: 2, nom: "Salade César", categorie: "Salades", prix: 8.50, unite: "portion", stock: 25, allergenes: ["Œufs", "Poisson", "Lait"] },
+      { id: 3, nom: "Boîte à lunch végétarienne", categorie: "Boîtes à lunch", prix: 16, unite: "boîte", stock: 30, allergenes: ["Gluten", "Noix"] },
+      { id: 4, nom: "Plateau de fruits frais", categorie: "Plateaux", prix: 55, unite: "plateau", stock: 8, allergenes: [] },
+      { id: 5, nom: "Wrap au poulet grillé", categorie: "Sandwichs", prix: 12, unite: "portion", stock: 40, allergenes: ["Gluten", "Moutarde"] },
+      { id: 6, nom: "Soupe du jour (1L)", categorie: "Soupes", prix: 18, unite: "litre", stock: 15, allergenes: ["Céleri"] },
+      { id: 7, nom: "Plateau de viennoiseries", categorie: "Pâtisseries", prix: 38, unite: "plateau", stock: 10, allergenes: ["Gluten", "Œufs", "Lait", "Noix"] },
+      { id: 8, nom: "Quiche lorraine", categorie: "Plats chauds", prix: 24, unite: "unité", stock: 20, allergenes: ["Gluten", "Œufs", "Lait", "Porc"] },
+    ];
+
+    const mockEvenements = [
+      { id: 201, nom: "Cocktail Entreprise ABC", date: "2024-02-05", heure: "17:00", lieu: "Centre-ville Montréal", convives: 50, statut: "Confirmé", responsable: "Marie Lavoie", commandeId: 101 },
+      { id: 202, nom: "Lancement produit XYZ", date: "2024-02-06", heure: "19:00", lieu: "Vieux-Port", convives: 120, statut: "En planification", responsable: "Pierre Gagnon", commandeId: 103 },
+      { id: 203, nom: "Réunion conseil administration", date: "2024-02-07", heure: "12:00", lieu: "Tour de la Bourse", convives: 15, statut: "Confirmé", responsable: "Marie Lavoie", commandeId: null },
+      { id: 204, nom: "Mariage Tremblay-Côté", date: "2024-02-10", heure: "18:00", lieu: "Château Frontenac", convives: 80, statut: "Soumission", responsable: "Sophie Bouchard", commandeId: null },
+    ];
+
+    const mockInventaire = [
+      { id: 1, nom: "Farine tout usage", categorie: "Ingrédients secs", quantite: 50, unite: "kg", seuil: 20, lot: "LOT-2024-001", peremption: "2024-06-01", fournisseur: "Metro", prixAchat: 1.20 },
+      { id: 2, nom: "Tomates fraîches", categorie: "Légumes", quantite: 15, unite: "kg", seuil: 10, lot: "LOT-2024-023", peremption: "2024-02-08", fournisseur: "Ferme Lavoie", prixAchat: 3.50 },
+      { id: 3, nom: "Poulet frais", categorie: "Viandes", quantite: 25, unite: "kg", seuil: 15, lot: "LOT-2024-045", peremption: "2024-02-05", fournisseur: "Volailles du Québec", prixAchat: 8.90 },
+      { id: 4, nom: "Fromage cheddar", categorie: "Produits laitiers", quantite: 12, unite: "kg", seuil: 8, lot: "LOT-2024-067", peremption: "2024-02-20", fournisseur: "Fromagerie Bergeron", prixAchat: 12.50 },
+      { id: 5, nom: "Huile d'olive", categorie: "Huiles et condiments", quantite: 20, unite: "L", seuil: 10, lot: "LOT-2024-089", peremption: "2024-12-01", fournisseur: "Importations Méditerranée", prixAchat: 15.00 },
+      { id: 6, nom: "Oeufs frais", categorie: "Produits laitiers", quantite: 30, unite: "douzaines", seuil: 20, lot: "LOT-2024-090", peremption: "2024-02-15", fournisseur: "Ferme des Érables", prixAchat: 4.50 },
+    ];
+
+    const mockFactures = [
+      { id: 301, numero: "FAC-2024-001", client: "Restaurant Chez Michel", date: "2024-02-01", montant: 850, statut: "Payée", echeance: "2024-03-01" },
+      { id: 302, numero: "FAC-2024-002", client: "Hôtel Le Château", date: "2024-01-28", montant: 3200, statut: "En retard", echeance: "2024-02-28" },
+      { id: 303, numero: "FAC-2024-003", client: "Épicerie Gagnon et Fils", date: "2024-01-25", montant: 450, statut: "Payée", echeance: "2024-02-25" },
+      { id: 304, numero: "FAC-2024-004", client: "Restaurant Chez Michel", date: "2024-02-03", montant: 1250, statut: "Envoyée", echeance: "2024-03-03" },
+      { id: 305, numero: "FAC-2024-005", client: "Café du Coin", date: "2024-02-02", montant: 320, statut: "Envoyée", echeance: "2024-03-02" },
+    ];
+
+    const mockSoumissions = [
+      { id: 401, numero: "DEV-2024-001", client: "Banque Royale", date: "2024-02-01", montant: 5600, statut: "En attente", validite: "2024-02-15", evenement: "Réception clients VIP - 150 personnes" },
+      { id: 402, numero: "DEV-2024-002", client: "Université Laval", date: "2024-01-30", montant: 2800, statut: "Acceptée", validite: "2024-02-10", evenement: "Collation étudiants - 200 portions" },
+      { id: 403, numero: "DEV-2024-003", client: "Sophie Bouchard", date: "2024-02-02", montant: 8500, statut: "En révision", validite: "2024-02-20", evenement: "Mariage Tremblay-Côté - 80 convives" },
+      { id: 404, numero: "DEV-2024-004", client: "Hydro-Québec", date: "2024-02-03", montant: 1200, statut: "Expirée", validite: "2024-02-03", evenement: "Lunch corporatif - 30 personnes" },
+    ];
+
+    // Icônes SVG inline
+    const Icons = {
+      Dashboard: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+      ),
+      Users: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ),
+      Box: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      ),
+      Calendar: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+      Inventory: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+      ),
+      Invoice: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+      Cart: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
+      Document: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+      ),
+      Back: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+      ),
+      Plus: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
+      ),
+      Search: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      ),
+      Menu: () => (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      ),
+      Close: () => (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      ),
+    };
+
+    // Composant BackButton réutilisable
+    function BackButton({ onClick, label = "Retour" }) {
+      return (
+        <button
+          onClick={onClick}
+          className="flex items-center gap-2 text-[#666666] hover:text-gray-100 transition-colors mb-4"
+        >
+          <Icons.Back />
+          <span className="font-body">{label}</span>
+        </button>
+      );
+    }
+
+    // Composant Card avec style élégant
+    function Card({ children, className = "" }) {
+      return (
+        <div className={`bg-gray-800 border border-gray-700 shadow-xl ${className}`}>
+          {children}
+        </div>
+      );
+    }
+
+    // Composant principal de l'application
+    function App() {
+      // État de navigation 5 NIVEAUX
+      const [view, setView] = React.useState({
+        screen: 'list',
+        entityType: null,
+        entityId: null,
+        subEntityType: null,
+        subEntityId: null,
+      });
+
+      const [activeTab, setActiveTab] = React.useState('dashboard');
+      const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+      const [searchQuery, setSearchQuery] = React.useState('');
+
+      // Fonctions de navigation 5 NIVEAUX
+      const goToList = (type) => setView({
+        screen: 'list', entityType: type, entityId: null, subEntityType: null, subEntityId: null
+      });
+
+      const goToDetail = (type, id) => setView({
+        screen: 'detail', entityType: type, entityId: id, subEntityType: null, subEntityId: null
+      });
+
+      const goToSubList = (parentType, parentId, subType) => setView({
+        screen: 'sublist', entityType: parentType, entityId: parentId, subEntityType: subType, subEntityId: null
+      });
+
+      const goToEdit = (type, id) => setView({
+        screen: 'edit', entityType: type, entityId: id, subEntityType: null, subEntityId: null
+      });
+
+      const goToSubDetail = (parentType, parentId, subType, subId) => setView({
+        screen: 'subdetail', entityType: parentType, entityId: parentId, subEntityType: subType, subEntityId: subId
+      });
+
+      const goToSubEdit = (parentType, parentId, subType, subId) => setView({
+        screen: 'subedit', entityType: parentType, entityId: parentId, subEntityType: subType, subEntityId: subId
+      });
+
+      // Navigation tabs
+      const tabs = [
+        { id: 'dashboard', label: 'Tableau de bord', icon: Icons.Dashboard },
+        { id: 'clients', label: 'Clients', icon: Icons.Users },
+        { id: 'commandes', label: 'Commandes', icon: Icons.Cart },
+        { id: 'produits', label: 'Produits', icon: Icons.Box },
+        { id: 'evenements', label: 'Événements', icon: Icons.Calendar },
+        { id: 'inventaire', label: 'Inventaire', icon: Icons.Inventory },
+        { id: 'factures', label: 'Factures', icon: Icons.Invoice },
+        { id: 'soumissions', label: 'Soumissions', icon: Icons.Document },
+      ];
+
+      // Données pour graphiques
+      const revenusData = [
+        { mois: 'Sep', montant: 45000 },
+        { mois: 'Oct', montant: 52000 },
+        { mois: 'Nov', montant: 48000 },
+        { mois: 'Déc', montant: 61000 },
+        { mois: 'Jan', montant: 38000 },
+        { mois: 'Fév', montant: 42000 },
+      ];
+
+      const categoriesData = [
+        { name: 'Plateaux', value: 35, fill: '#000000' },
+        { name: 'Boîtes à lunch', value: 25, fill: '#333333' },
+        { name: 'Événements', value: 30, fill: '#666666' },
+        { name: 'Autres', value: 10, fill: '#999999' },
+      ];
+
+      // Composant Dashboard
+      function Dashboard() {
+        return (
+          <div className="space-y-6">
+            <h1 className="text-3xl font-display font-bold text-gray-100">Tableau de bord</h1>
+
+            {/* KPIs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="p-6 animate-fade-in-up" style={{animationDelay: '0ms'}}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[#666666] text-sm font-body">Revenus ce mois</p>
+                    <p className="text-2xl font-bold text-gray-100 mt-1">42 000 $</p>
+                    <p className="text-xs text-green-400 mt-1">+12% vs mois dernier</p>
+                  </div>
+                  <div className="w-12 h-12 bg-[#000000] flex items-center justify-center">
+                    <span className="text-gray-100 text-xl font-bold">$</span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 animate-fade-in-up" style={{animationDelay: '100ms'}}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[#666666] text-sm font-body">Commandes actives</p>
+                    <p className="text-2xl font-bold text-gray-100 mt-1">23</p>
+                    <p className="text-xs text-[#666666] mt-1">8 en production</p>
+                  </div>
+                  <div className="w-12 h-12 bg-[#000000] flex items-center justify-center">
+                    <Icons.Cart />
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 animate-fade-in-up" style={{animationDelay: '200ms'}}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[#666666] text-sm font-body">Événements cette semaine</p>
+                    <p className="text-2xl font-bold text-gray-100 mt-1">7</p>
+                    <p className="text-xs text-orange-400 mt-1">2 en attente</p>
+                  </div>
+                  <div className="w-12 h-12 bg-[#000000] flex items-center justify-center">
+                    <Icons.Calendar />
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 animate-fade-in-up" style={{animationDelay: '300ms'}}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[#666666] text-sm font-body">Taux conversion</p>
+                    <p className="text-2xl font-bold text-gray-100 mt-1">68%</p>
+                    <p className="text-xs text-green-400 mt-1">+5% ce mois</p>
+                  </div>
+                  <div className="w-12 h-12 bg-[#000000] flex items-center justify-center">
+                    <span className="text-gray-100 text-xl font-bold">%</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Graphiques */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="col-span-2 p-6">
+                <h3 className="text-lg font-display font-semibold text-gray-100 mb-4">Évolution des revenus</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={revenusData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
+                    <XAxis dataKey="mois" stroke="#666666" />
+                    <YAxis stroke="#666666" />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333333' }}
+                      labelStyle={{ color: '#999999' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="montant"
+                      stroke="#000000"
+                      strokeWidth={3}
+                      dot={{ fill: '#000000', r: 6 }}
+                      activeDot={{ r: 8 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="text-lg font-display font-semibold text-gray-100 mb-4">Répartition par catégorie</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={categoriesData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {categoriesData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333333' }}
+                      labelStyle={{ color: '#999999' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="mt-4 space-y-2">
+                  {categoriesData.map((cat, index) => (
+                    <div key={index} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-3 h-3`} style={{backgroundColor: cat.fill}}></div>
+                        <span className="text-[#666666]">{cat.name}</span>
+                      </div>
+                      <span className="text-gray-100 font-semibold">{cat.value}%</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+
+            {/* Activité récente */}
+            <Card className="p-6">
+              <h3 className="text-lg font-display font-semibold text-gray-100 mb-4">Activité récente</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2 border-b border-gray-700">
+                  <div>
+                    <p className="text-gray-100 font-medium">Nouvelle commande - Restaurant Chez Michel</p>
+                    <p className="text-sm text-[#666666]">Il y a 15 minutes</p>
+                  </div>
+                  <span className="text-green-400 font-medium">+1 250 $</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-gray-700">
+                  <div>
+                    <p className="text-gray-100 font-medium">Soumission acceptée - Université Laval</p>
+                    <p className="text-sm text-[#666666]">Il y a 2 heures</p>
+                  </div>
+                  <span className="text-green-400 font-medium">+2 800 $</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-gray-700">
+                  <div>
+                    <p className="text-gray-100 font-medium">Livraison complétée - Épicerie Gagnon</p>
+                    <p className="text-sm text-[#666666]">Il y a 3 heures</p>
+                  </div>
+                  <span className="text-[#666666]">CMD-2024-004</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        );
+      }
+
+      // Composant Liste Clients
+      function ClientList({ onSelect, onCreate }) {
+        const filteredClients = mockClients.filter(client =>
+          client.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          client.contact.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          client.email.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        return (
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <h1 className="text-3xl font-display font-bold text-gray-100">Clients</h1>
+              <button
+                onClick={onCreate}
+                className="bg-[#000000] hover:bg-[#333333] text-white px-6 py-2 font-body font-medium transition-colors flex items-center gap-2"
+              >
+                <Icons.Plus />
+                Nouveau client
+              </button>
+            </div>
+
+            <Card className="overflow-hidden">
+              <div className="p-4 border-b border-gray-700">
+                <div className="relative">
+                  <Icons.Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#666666]" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher un client..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-gray-700 text-gray-100 pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000] font-body"
+                  />
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-700 text-left">
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Client</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider hidden md:table-cell">Contact</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider hidden lg:table-cell">Type</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Solde</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {filteredClients.map(client => (
+                      <tr
+                        key={client.id}
+                        onClick={() => onSelect(client.id)}
+                        className="hover:bg-gray-700 cursor-pointer transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="text-gray-100 font-medium">{client.nom}</p>
+                            <p className="text-sm text-[#666666]">{client.email}</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 hidden md:table-cell">
+                          <p className="text-gray-100">{client.contact}</p>
+                          <p className="text-sm text-[#666666]">{client.telephone}</p>
+                        </td>
+                        <td className="px-6 py-4 hidden lg:table-cell">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold ${
+                            client.type === 'B2B'
+                              ? 'bg-[#000000] text-white'
+                              : 'bg-gray-600 text-gray-100'
+                          }`}>
+                            {client.type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className={`font-medium ${client.solde > 0 ? 'text-orange-400' : 'text-gray-100'}`}>
+                            {client.solde.toLocaleString('fr-CA')} $
+                          </p>
+                          {client.type === 'B2B' && (
+                            <p className="text-xs text-[#666666]">Crédit: {client.credit.toLocaleString('fr-CA')} $</p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); goToEdit('client', client.id); }}
+                            className="text-[#666666] hover:text-gray-100 font-medium transition-colors"
+                          >
+                            Modifier
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        );
+      }
+
+      // Composant Détail Client
+      function ClientDetail({ clientId, onBack, onEdit }) {
+        const client = mockClients.find(c => c.id === clientId);
+        if (!client) return <div className="text-gray-100">Client non trouvé</div>;
+
+        const clientCommandes = mockCommandes.filter(cmd => cmd.clientId === clientId);
+        const commandesRecentes = clientCommandes.slice(0, 3);
+
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <BackButton onClick={onBack} label="Retour aux clients" />
+
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-display font-bold text-gray-100">{client.nom}</h1>
+                <p className="text-[#666666] mt-1">{client.email}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onEdit(client.id)}
+                  className="bg-[#000000] hover:bg-[#333333] text-white px-6 py-2 font-body font-medium transition-colors"
+                >
+                  Modifier
+                </button>
+                <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 font-body font-medium transition-colors">
+                  Supprimer
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <h3 className="font-display font-semibold text-gray-100 mb-4">Informations de contact</h3>
+                <dl className="space-y-3">
+                  <div>
+                    <dt className="text-sm text-[#666666]">Contact principal</dt>
+                    <dd className="text-gray-100 font-medium">{client.contact}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Téléphone</dt>
+                    <dd className="text-gray-100">{client.telephone}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Adresse</dt>
+                    <dd className="text-gray-100">{client.adresse}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Type de client</dt>
+                    <dd>
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold ${
+                        client.type === 'B2B'
+                          ? 'bg-[#000000] text-white'
+                          : 'bg-gray-600 text-gray-100'
+                      }`}>
+                        {client.type}
+                      </span>
+                    </dd>
+                  </div>
+                </dl>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="font-display font-semibold text-gray-100 mb-4">Informations financières</h3>
+                <dl className="space-y-3">
+                  <div>
+                    <dt className="text-sm text-[#666666]">Solde en cours</dt>
+                    <dd className={`text-2xl font-bold ${client.solde > 0 ? 'text-orange-400' : 'text-gray-100'}`}>
+                      {client.solde.toLocaleString('fr-CA')} $
+                    </dd>
+                  </div>
+                  {client.type === 'B2B' && (
+                    <div>
+                      <dt className="text-sm text-[#666666]">Limite de crédit</dt>
+                      <dd className="text-gray-100 font-medium">{client.credit.toLocaleString('fr-CA')} $</dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt className="text-sm text-[#666666]">Conditions de paiement</dt>
+                    <dd className="text-gray-100">Net 30 jours</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Nombre de commandes</dt>
+                    <dd className="text-gray-100">{clientCommandes.length}</dd>
+                  </div>
+                </dl>
+              </Card>
+            </div>
+
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display font-semibold text-gray-100">Commandes récentes</h3>
+                {clientCommandes.length > 3 && (
+                  <button
+                    onClick={() => goToSubList('client', clientId, 'commande')}
+                    className="text-[#666666] hover:text-gray-100 text-sm font-medium transition-colors"
+                  >
+                    Voir toutes les commandes →
+                  </button>
+                )}
+              </div>
+
+              {commandesRecentes.length > 0 ? (
+                <div className="space-y-3">
+                  {commandesRecentes.map(commande => (
+                    <div
+                      key={commande.id}
+                      onClick={() => goToSubDetail('client', clientId, 'commande', commande.id)}
+                      className="flex items-center justify-between py-3 border-b border-gray-700 hover:bg-gray-700 px-2 -mx-2 cursor-pointer transition-colors"
+                    >
+                      <div>
+                        <p className="text-gray-100 font-medium">{commande.numero}</p>
+                        <p className="text-sm text-[#666666]">{commande.date} - {commande.evenement}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-gray-100 font-medium">{commande.montant.toLocaleString('fr-CA')} $</p>
+                        <p className={`text-xs font-medium ${
+                          commande.statut === 'Livrée' ? 'text-green-400' :
+                          commande.statut === 'En production' ? 'text-orange-400' :
+                          'text-[#666666]'
+                        }`}>
+                          {commande.statut}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[#666666]">Aucune commande pour ce client</p>
+              )}
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-display font-semibold text-gray-100 mb-4">Notes et préférences</h3>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-[#666666] mb-1">Allergènes à éviter</p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-red-600 text-white px-2 py-1 text-xs font-semibold">Arachides</span>
+                    <span className="bg-red-600 text-white px-2 py-1 text-xs font-semibold">Fruits de mer</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-[#666666] mb-1">Préférences</p>
+                  <p className="text-gray-100">Préfère les options végétariennes, livraison avant 11h</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        );
+      }
+
+      // Composant Liste des Commandes d'un Client
+      function CommandesList({ clientId, onBack, onSelect }) {
+        const client = mockClients.find(c => c.id === clientId);
+        const clientCommandes = mockCommandes.filter(cmd => cmd.clientId === clientId);
+
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <BackButton onClick={onBack} label={`Retour à ${client?.nom || 'Client'}`} />
+
+            <div>
+              <h1 className="text-3xl font-display font-bold text-gray-100">Commandes de {client?.nom}</h1>
+              <p className="text-[#666666] mt-1">{clientCommandes.length} commandes au total</p>
+            </div>
+
+            <Card className="overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-700 text-left">
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Numéro</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Date</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider hidden md:table-cell">Événement</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Statut</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider text-right">Montant</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {clientCommandes.map(commande => (
+                      <tr
+                        key={commande.id}
+                        onClick={() => onSelect(commande.id)}
+                        className="hover:bg-gray-700 cursor-pointer transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <p className="text-gray-100 font-medium">{commande.numero}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-gray-100">{commande.date}</p>
+                          <p className="text-sm text-[#666666]">{commande.livraison}</p>
+                        </td>
+                        <td className="px-6 py-4 hidden md:table-cell">
+                          <p className="text-gray-100">{commande.evenement}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold ${
+                            commande.statut === 'Livrée' ? 'bg-green-600 text-white' :
+                            commande.statut === 'En production' ? 'bg-orange-600 text-white' :
+                            commande.statut === 'En préparation' ? 'bg-yellow-600 text-white' :
+                            'bg-gray-600 text-gray-100'
+                          }`}>
+                            {commande.statut}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <p className="text-gray-100 font-medium">{commande.montant.toLocaleString('fr-CA')} $</p>
+                          <p className="text-xs text-[#666666]">{commande.items} articles</p>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        );
+      }
+
+      // Composant Détail Commande
+      function CommandeDetail({ commandeId, onBack, onEdit }) {
+        const commande = mockCommandes.find(c => c.id === commandeId);
+        const client = mockClients.find(c => c.id === commande?.clientId);
+
+        if (!commande) return <div className="text-gray-100">Commande non trouvée</div>;
+
+        // Simulation d'articles de la commande
+        const articles = [
+          { id: 1, nom: "Plateau de sandwichs assortis", quantite: 2, prixUnitaire: 45, total: 90 },
+          { id: 2, nom: "Salade César", quantite: 20, prixUnitaire: 8.50, total: 170 },
+          { id: 3, nom: "Plateau de fruits frais", quantite: 1, prixUnitaire: 55, total: 55 },
+          { id: 4, nom: "Boîte à lunch végétarienne", quantite: 15, prixUnitaire: 16, total: 240 },
+          { id: 5, nom: "Livraison", quantite: 1, prixUnitaire: 35, total: 35 },
+        ];
+
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <BackButton onClick={onBack} label="Retour aux commandes" />
+
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-display font-bold text-gray-100">{commande.numero}</h1>
+                <p className="text-[#666666] mt-1">{client?.nom} - {commande.evenement}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onEdit(commande.id)}
+                  className="bg-[#000000] hover:bg-[#333333] text-white px-6 py-2 font-body font-medium transition-colors"
+                >
+                  Modifier
+                </button>
+                <button className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 font-body font-medium transition-colors">
+                  Imprimer
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="p-6">
+                <h3 className="font-display font-semibold text-gray-100 mb-4">Informations</h3>
+                <dl className="space-y-3">
+                  <div>
+                    <dt className="text-sm text-[#666666]">Date de commande</dt>
+                    <dd className="text-gray-100">{commande.date}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Livraison prévue</dt>
+                    <dd className="text-gray-100 font-medium">{commande.livraison}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Statut</dt>
+                    <dd>
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold ${
+                        commande.statut === 'Livrée' ? 'bg-green-600 text-white' :
+                        commande.statut === 'En production' ? 'bg-orange-600 text-white' :
+                        'bg-gray-600 text-gray-100'
+                      }`}>
+                        {commande.statut}
+                      </span>
+                    </dd>
+                  </div>
+                </dl>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="font-display font-semibold text-gray-100 mb-4">Client</h3>
+                <dl className="space-y-3">
+                  <div>
+                    <dt className="text-sm text-[#666666]">Nom</dt>
+                    <dd className="text-gray-100">{client?.nom}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Contact</dt>
+                    <dd className="text-gray-100">{client?.contact}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Téléphone</dt>
+                    <dd className="text-gray-100">{client?.telephone}</dd>
+                  </div>
+                </dl>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="font-display font-semibold text-gray-100 mb-4">Livraison</h3>
+                <dl className="space-y-3">
+                  <div>
+                    <dt className="text-sm text-[#666666]">Adresse</dt>
+                    <dd className="text-gray-100">{client?.adresse}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-[#666666]">Instructions</dt>
+                    <dd className="text-gray-100">Livrer à la réception, appeler à l'arrivée</dd>
+                  </div>
+                </dl>
+              </Card>
+            </div>
+
+            <Card className="p-6">
+              <h3 className="font-display font-semibold text-gray-100 mb-4">Articles commandés</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-700">
+                      <th className="text-left py-2 text-sm font-medium text-[#666666]">Article</th>
+                      <th className="text-center py-2 text-sm font-medium text-[#666666]">Qté</th>
+                      <th className="text-right py-2 text-sm font-medium text-[#666666]">Prix unit.</th>
+                      <th className="text-right py-2 text-sm font-medium text-[#666666]">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {articles.map(article => (
+                      <tr key={article.id}>
+                        <td className="py-3 text-gray-100">{article.nom}</td>
+                        <td className="py-3 text-center text-gray-100">{article.quantite}</td>
+                        <td className="py-3 text-right text-gray-100">{article.prixUnitaire.toFixed(2)} $</td>
+                        <td className="py-3 text-right font-medium text-gray-100">{article.total.toFixed(2)} $</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-gray-700">
+                      <td colSpan="3" className="py-3 text-right font-semibold text-gray-100">Sous-total</td>
+                      <td className="py-3 text-right font-semibold text-gray-100">590,00 $</td>
+                    </tr>
+                    <tr>
+                      <td colSpan="3" className="py-2 text-right text-[#666666]">TPS (5%)</td>
+                      <td className="py-2 text-right text-gray-100">29,50 $</td>
+                    </tr>
+                    <tr>
+                      <td colSpan="3" className="py-2 text-right text-[#666666]">TVQ (9,975%)</td>
+                      <td className="py-2 text-right text-gray-100">58,85 $</td>
+                    </tr>
+                    <tr className="text-xl font-bold">
+                      <td colSpan="3" className="py-3 text-right text-gray-100">Total</td>
+                      <td className="py-3 text-right text-gray-100">678,35 $</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-display font-semibold text-gray-100 mb-4">Notes de production</h3>
+              <div className="space-y-3">
+                <div className="bg-red-900/20 border border-red-800 p-3">
+                  <p className="text-sm font-semibold text-red-400 mb-1">⚠️ Allergènes à éviter</p>
+                  <p className="text-gray-100">Client allergique aux arachides et fruits de mer</p>
+                </div>
+                <div>
+                  <p className="text-sm text-[#666666] mb-1">Instructions spéciales</p>
+                  <p className="text-gray-100">Séparer les sandwichs végétariens des autres. Identifier clairement sur l'emballage.</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        );
+      }
+
+      // Composant Édition Commande (Niveau 5)
+      function CommandeEdit({ commandeId, onBack, onSave }) {
+        const commande = mockCommandes.find(c => c.id === commandeId);
+        const client = mockClients.find(c => c.id === commande?.clientId);
+
+        const [formData, setFormData] = React.useState({
+          date: commande?.date || '',
+          livraison: commande?.livraison || '',
+          statut: commande?.statut || 'Nouvelle',
+          evenement: commande?.evenement || '',
+        });
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          // Simuler la sauvegarde
+          alert('Commande mise à jour avec succès!');
+          onSave();
+        };
+
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <BackButton onClick={onBack} label="Retour au détail" />
+
+            <div>
+              <h1 className="text-3xl font-display font-bold text-gray-100">Modifier {commande?.numero}</h1>
+              <p className="text-[#666666] mt-1">{client?.nom}</p>
+            </div>
+
+            <Card className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-2">Date de commande</label>
+                    <input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData({...formData, date: e.target.value})}
+                      className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-2">Date et heure de livraison</label>
+                    <input
+                      type="text"
+                      value={formData.livraison}
+                      onChange={(e) => setFormData({...formData, livraison: e.target.value})}
+                      className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                      placeholder="2024-02-05 11:00"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-2">Statut</label>
+                    <select
+                      value={formData.statut}
+                      onChange={(e) => setFormData({...formData, statut: e.target.value})}
+                      className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                    >
+                      <option value="Nouvelle">Nouvelle</option>
+                      <option value="En préparation">En préparation</option>
+                      <option value="En production">En production</option>
+                      <option value="Livrée">Livrée</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-2">Événement</label>
+                    <input
+                      type="text"
+                      value={formData.evenement}
+                      onChange={(e) => setFormData({...formData, evenement: e.target.value})}
+                      className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-display font-semibold text-gray-100 mb-4">Articles de la commande</h3>
+                  <p className="text-[#666666]">La modification des articles sera disponible dans une prochaine version</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#666666] mb-2">Notes de production</label>
+                  <textarea
+                    rows="4"
+                    className="w-full bg-gray-700 text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                    placeholder="Instructions spéciales, allergènes, etc."
+                  ></textarea>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="submit"
+                    className="bg-[#000000] hover:bg-[#333333] text-white px-6 py-2 font-body font-medium transition-colors"
+                  >
+                    Enregistrer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 font-body font-medium transition-colors"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            </Card>
+          </div>
+        );
+      }
+
+      // Autres listes simples (sans navigation profonde pour la démo)
+      function SimpleList({ title, data, columns }) {
+        return (
+          <div className="space-y-6">
+            <h1 className="text-3xl font-display font-bold text-gray-100">{title}</h1>
+            <Card className="overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-700 text-left">
+                      {columns.map((col, idx) => (
+                        <th key={idx} className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">
+                          {col.header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {data.map((item, idx) => (
+                      <tr key={idx} className="hover:bg-gray-700 transition-colors">
+                        {columns.map((col, colIdx) => (
+                          <td key={colIdx} className="px-6 py-4 text-gray-100">
+                            {col.render(item)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-gray-900">
+          {/* Header avec logo */}
+          <header className="bg-gray-800 border-b border-gray-700">
+            <div className="px-4 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <img
+                  src="https://lebangard.com/favicon-512x512.png"
+                  alt="Le Bangard Inc."
+                  className="h-10 w-10"
+                  onError={(e) => {
+                    e.target.src = 'https://lebangard.com/favicon-192x192.png';
+                  }}
+                />
+                <div>
+                  <h1 className="text-xl font-display font-bold text-gray-100">Le Bangard Inc.</h1>
+                  <p className="text-xs text-[#666666]">Système de gestion traiteur</p>
+                </div>
+              </div>
+
+              {/* Menu mobile */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden text-gray-100 hover:text-white transition-colors"
+              >
+                {mobileMenuOpen ? <Icons.Close /> : <Icons.Menu />}
+              </button>
+            </div>
+          </header>
+
+          <div className="flex">
+            {/* Sidebar desktop */}
+            <aside className={`${mobileMenuOpen ? 'fixed inset-0 z-50 bg-gray-900' : 'hidden'} lg:block lg:relative lg:w-64 bg-gray-800 border-r border-gray-700 h-[calc(100vh-73px)]`}>
+              {mobileMenuOpen && (
+                <div className="p-4 border-b border-gray-700 lg:hidden">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-display font-semibold text-gray-100">Menu</h2>
+                    <button
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="text-gray-100 hover:text-white transition-colors"
+                    >
+                      <Icons.Close />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <nav className="p-4 space-y-1">
+                {tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setView({ screen: 'list', entityType: null, entityId: null, subEntityType: null, subEntityId: null });
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all ${
+                      activeTab === tab.id
+                        ? 'bg-[#000000] text-white border-l-4 border-white'
+                        : 'text-[#666666] hover:text-gray-100 hover:bg-gray-700'
+                    }`}
+                  >
+                    <tab.icon />
+                    <span className="font-body font-medium">{tab.label}</span>
+                  </button>
+                ))}
+              </nav>
+            </aside>
+
+            {/* Contenu principal */}
+            <main className="flex-1 p-6 lg:p-8 overflow-auto">
+              {/* Dashboard */}
+              {activeTab === 'dashboard' && <Dashboard />}
+
+              {/* Clients avec navigation 5 niveaux */}
+              {activeTab === 'clients' && (
+                <>
+                  {view.screen === 'list' && (
+                    <ClientList
+                      onSelect={(id) => goToDetail('client', id)}
+                      onCreate={() => alert('Création de client')}
+                    />
+                  )}
+                  {view.screen === 'detail' && view.entityType === 'client' && (
+                    <ClientDetail
+                      clientId={view.entityId}
+                      onBack={() => goToList('client')}
+                      onEdit={(id) => goToEdit('client', id)}
+                    />
+                  )}
+                  {view.screen === 'sublist' && view.subEntityType === 'commande' && (
+                    <CommandesList
+                      clientId={view.entityId}
+                      onBack={() => goToDetail('client', view.entityId)}
+                      onSelect={(cmdId) => goToSubDetail('client', view.entityId, 'commande', cmdId)}
+                    />
+                  )}
+                  {view.screen === 'subdetail' && view.subEntityType === 'commande' && (
+                    <CommandeDetail
+                      commandeId={view.subEntityId}
+                      onBack={() => goToSubList('client', view.entityId, 'commande')}
+                      onEdit={() => goToSubEdit('client', view.entityId, 'commande', view.subEntityId)}
+                    />
+                  )}
+                  {view.screen === 'subedit' && view.subEntityType === 'commande' && (
+                    <CommandeEdit
+                      commandeId={view.subEntityId}
+                      onBack={() => goToSubDetail('client', view.entityId, 'commande', view.subEntityId)}
+                      onSave={() => goToSubDetail('client', view.entityId, 'commande', view.subEntityId)}
+                    />
+                  )}
+                </>
+              )}
+
+              {/* Commandes */}
+              {activeTab === 'commandes' && (
+                <SimpleList
+                  title="Commandes"
+                  data={mockCommandes}
+                  columns={[
+                    { header: 'Numéro', render: (item) => item.numero },
+                    { header: 'Client', render: (item) => mockClients.find(c => c.id === item.clientId)?.nom },
+                    { header: 'Date', render: (item) => item.date },
+                    { header: 'Statut', render: (item) => (
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold ${
+                        item.statut === 'Livrée' ? 'bg-green-600 text-white' :
+                        item.statut === 'En production' ? 'bg-orange-600 text-white' :
+                        'bg-gray-600 text-gray-100'
+                      }`}>
+                        {item.statut}
+                      </span>
+                    )},
+                    { header: 'Montant', render: (item) => `${item.montant.toLocaleString('fr-CA')} $` },
+                  ]}
+                />
+              )}
+
+              {/* Produits */}
+              {activeTab === 'produits' && (
+                <SimpleList
+                  title="Produits"
+                  data={mockProduits}
+                  columns={[
+                    { header: 'Nom', render: (item) => item.nom },
+                    { header: 'Catégorie', render: (item) => item.categorie },
+                    { header: 'Prix', render: (item) => `${item.prix.toFixed(2)} $ / ${item.unite}` },
+                    { header: 'Stock', render: (item) => (
+                      <span className={item.stock < 15 ? 'text-orange-400' : 'text-gray-100'}>
+                        {item.stock} {item.unite}s
+                      </span>
+                    )},
+                    { header: 'Allergènes', render: (item) => (
+                      <div className="flex flex-wrap gap-1">
+                        {item.allergenes.map((a, idx) => (
+                          <span key={idx} className="bg-red-600 text-white px-1 py-0.5 text-xs">
+                            {a}
+                          </span>
+                        ))}
+                      </div>
+                    )},
+                  ]}
+                />
+              )}
+
+              {/* Événements */}
+              {activeTab === 'evenements' && (
+                <SimpleList
+                  title="Événements"
+                  data={mockEvenements}
+                  columns={[
+                    { header: 'Événement', render: (item) => item.nom },
+                    { header: 'Date', render: (item) => `${item.date} ${item.heure}` },
+                    { header: 'Lieu', render: (item) => item.lieu },
+                    { header: 'Convives', render: (item) => item.convives },
+                    { header: 'Statut', render: (item) => (
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold ${
+                        item.statut === 'Confirmé' ? 'bg-green-600 text-white' :
+                        item.statut === 'En planification' ? 'bg-orange-600 text-white' :
+                        'bg-gray-600 text-gray-100'
+                      }`}>
+                        {item.statut}
+                      </span>
+                    )},
+                  ]}
+                />
+              )}
+
+              {/* Inventaire */}
+              {activeTab === 'inventaire' && (
+                <SimpleList
+                  title="Inventaire"
+                  data={mockInventaire}
+                  columns={[
+                    { header: 'Article', render: (item) => item.nom },
+                    { header: 'Catégorie', render: (item) => item.categorie },
+                    { header: 'Stock', render: (item) => (
+                      <span className={item.quantite <= item.seuil ? 'text-orange-400 font-semibold' : 'text-gray-100'}>
+                        {item.quantite} {item.unite}
+                      </span>
+                    )},
+                    { header: 'Lot', render: (item) => item.lot },
+                    { header: 'Péremption', render: (item) => (
+                      <span className={
+                        new Date(item.peremption) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                          ? 'text-red-400 font-semibold'
+                          : 'text-gray-100'
+                      }>
+                        {item.peremption}
+                      </span>
+                    )},
+                  ]}
+                />
+              )}
+
+              {/* Factures */}
+              {activeTab === 'factures' && (
+                <SimpleList
+                  title="Factures"
+                  data={mockFactures}
+                  columns={[
+                    { header: 'Numéro', render: (item) => item.numero },
+                    { header: 'Client', render: (item) => item.client },
+                    { header: 'Date', render: (item) => item.date },
+                    { header: 'Échéance', render: (item) => item.echeance },
+                    { header: 'Montant', render: (item) => `${item.montant.toLocaleString('fr-CA')} $` },
+                    { header: 'Statut', render: (item) => (
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold ${
+                        item.statut === 'Payée' ? 'bg-green-600 text-white' :
+                        item.statut === 'En retard' ? 'bg-red-600 text-white' :
+                        'bg-gray-600 text-gray-100'
+                      }`}>
+                        {item.statut}
+                      </span>
+                    )},
+                  ]}
+                />
+              )}
+
+              {/* Soumissions */}
+              {activeTab === 'soumissions' && (
+                <SimpleList
+                  title="Soumissions"
+                  data={mockSoumissions}
+                  columns={[
+                    { header: 'Numéro', render: (item) => item.numero },
+                    { header: 'Client', render: (item) => item.client },
+                    { header: 'Date', render: (item) => item.date },
+                    { header: 'Validité', render: (item) => item.validite },
+                    { header: 'Montant', render: (item) => `${item.montant.toLocaleString('fr-CA')} $` },
+                    { header: 'Statut', render: (item) => (
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold ${
+                        item.statut === 'Acceptée' ? 'bg-green-600 text-white' :
+                        item.statut === 'En attente' ? 'bg-orange-600 text-white' :
+                        item.statut === 'Expirée' ? 'bg-red-600 text-white' :
+                        'bg-gray-600 text-gray-100'
+                      }`}>
+                        {item.statut}
+                      </span>
+                    )},
+                  ]}
+                />
+              )}
+            </main>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

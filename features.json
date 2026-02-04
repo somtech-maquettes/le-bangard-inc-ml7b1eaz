@@ -1,0 +1,44 @@
+{
+  "features": [
+    {
+      "libelle": "Tableau de bord avec indicateurs de performance",
+      "montant": 3500,
+      "obligatoire": true
+    },
+    {
+      "libelle": "Gestion complète des clients et CRM",
+      "montant": 2800,
+      "obligatoire": true
+    },
+    {
+      "libelle": "Suivi des commandes et production",
+      "montant": 3200,
+      "obligatoire": true
+    },
+    {
+      "libelle": "Gestion d'inventaire avec traçabilité HACCP",
+      "montant": 3800,
+      "obligatoire": true
+    },
+    {
+      "libelle": "Module de facturation et intégration QuickBooks",
+      "montant": 2500,
+      "obligatoire": false
+    },
+    {
+      "libelle": "Gestion des événements et calendrier",
+      "montant": 2200,
+      "obligatoire": false
+    },
+    {
+      "libelle": "Catalogue produits et gestion des allergènes",
+      "montant": 1800,
+      "obligatoire": true
+    },
+    {
+      "libelle": "Module de soumissions professionnelles",
+      "montant": 1500,
+      "obligatoire": false
+    }
+  ]
+}
