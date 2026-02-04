@@ -437,29 +437,9 @@
         subEntityId: null,
       });
 
-      // Liste des allergènes communs
-      const commonAllergenes = [
-        "Gluten",
-        "Œufs",
-        "Lait",
-        "Noix",
-        "Arachides",
-        "Soja",
-        "Poisson",
-        "Crustacés",
-        "Moutarde",
-        "Sésame",
-        "Céleri",
-        "Sulfites",
-        "Lupin",
-        "Mollusques",
-        "Porc"
-      ];
-
       const [activeTab, setActiveTab] = React.useState('dashboard');
       const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
       const [searchQuery, setSearchQuery] = React.useState('');
-      const [selectedAllergenes, setSelectedAllergenes] = React.useState([]);
 
       // Fonctions de navigation 5 NIVEAUX
       const goToList = (type) => setView({
@@ -1303,22 +1283,11 @@
 
       // Composant Liste des Recettes
       function RecetteList({ onSelect, onCreate }) {
-        const [filterAllergenes, setFilterAllergenes] = React.useState([]);
-        const [showAllergenesFilter, setShowAllergenesFilter] = React.useState(false);
-
-        const filteredRecettes = mockRecettes.filter(recette => {
-          // Filtre par recherche
-          const matchesSearch =
-            recette.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            recette.categorie.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            recette.ingredients.some(ing => ing.nom.toLowerCase().includes(searchQuery.toLowerCase()));
-
-          // Filtre par allergènes
-          const matchesAllergenes = filterAllergenes.length === 0 ||
-            filterAllergenes.every(allergene => !recette.allergenes.includes(allergene));
-
-          return matchesSearch && matchesAllergenes;
-        });
+        const filteredRecettes = mockRecettes.filter(recette =>
+          recette.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          recette.categorie.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          recette.ingredients.some(ing => ing.nom.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
 
         return (
           <div className="space-y-6">
@@ -1334,86 +1303,17 @@
             </div>
 
             <Card className="overflow-hidden">
-              <div className="p-4 border-b border-gray-700 space-y-3">
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Icons.Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#666666]" />
-                    <input
-                      type="text"
-                      placeholder="Rechercher une recette..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-gray-700 text-gray-100 pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000] font-body"
-                    />
-                  </div>
-                  <button
-                    onClick={() => setShowAllergenesFilter(!showAllergenesFilter)}
-                    className={`px-4 py-2 font-medium transition-colors ${
-                      filterAllergenes.length > 0
-                        ? 'bg-red-600 hover:bg-red-700 text-white'
-                        : 'bg-gray-700 hover:bg-gray-600 text-gray-100'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                      </svg>
-                      Sans allergènes {filterAllergenes.length > 0 && `(${filterAllergenes.length})`}
-                    </span>
-                  </button>
+              <div className="p-4 border-b border-gray-700">
+                <div className="relative">
+                  <Icons.Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#666666]" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher une recette..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-gray-700 text-gray-100 pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#000000] font-body"
+                  />
                 </div>
-
-                {showAllergenesFilter && (
-                  <div className="bg-gray-800 border border-gray-700 p-4 animate-fade-in">
-                    <p className="text-sm text-gray-100 font-medium mb-3">
-                      Exclure les recettes contenant ces allergènes:
-                    </p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                      {commonAllergenes.map((allergene) => (
-                        <label key={allergene} className="flex items-center space-x-2 cursor-pointer text-sm">
-                          <input
-                            type="checkbox"
-                            checked={filterAllergenes.includes(allergene)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setFilterAllergenes([...filterAllergenes, allergene]);
-                              } else {
-                                setFilterAllergenes(filterAllergenes.filter(a => a !== allergene));
-                              }
-                            }}
-                            className="w-4 h-4 bg-gray-700 border-gray-600 text-[#000000] focus:ring-[#000000]"
-                          />
-                          <span className="text-gray-100">{allergene}</span>
-                        </label>
-                      ))}
-                    </div>
-                    {filterAllergenes.length > 0 && (
-                      <button
-                        onClick={() => setFilterAllergenes([])}
-                        className="mt-3 text-sm text-[#666666] hover:text-gray-100 underline"
-                      >
-                        Réinitialiser les filtres
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {filterAllergenes.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    <span className="text-xs text-[#666666]">Exclusions actives:</span>
-                    {filterAllergenes.map((allergene) => (
-                      <span key={allergene} className="bg-red-600 text-white px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1">
-                        {allergene}
-                        <button
-                          onClick={() => setFilterAllergenes(filterAllergenes.filter(a => a !== allergene))}
-                          className="hover:text-gray-200"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
 
               <div className="overflow-x-auto">
@@ -1422,10 +1322,9 @@
                     <tr className="bg-gray-700 text-left">
                       <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Recette</th>
                       <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider hidden md:table-cell">Catégorie</th>
-                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider hidden lg:table-cell">Allergènes</th>
                       <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Coût</th>
                       <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider">Prix</th>
-                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider hidden xl:table-cell">Marge</th>
+                      <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider hidden lg:table-cell">Marge</th>
                       <th className="px-6 py-3 text-xs font-medium text-[#666666] uppercase tracking-wider text-right">Actions</th>
                     </tr>
                   </thead>
@@ -1694,7 +1593,6 @@
           portions: recette?.portions || 1,
           prixSuggere: recette?.prixSuggere || '',
           instructions: recette?.instructions || '',
-          allergenes: recette?.allergenes || []
         });
 
         const handleSubmit = (e) => {
@@ -1812,45 +1710,7 @@
 
                 <div>
                   <label className="block text-sm font-medium text-[#666666] mb-2">Allergènes</label>
-                  <div className="bg-gray-800 border border-gray-700 p-4">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {commonAllergenes.map((allergene) => (
-                        <label key={allergene} className="flex items-center space-x-2 cursor-pointer hover:text-gray-100">
-                          <input
-                            type="checkbox"
-                            checked={formData.allergenes.includes(allergene)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setFormData({
-                                  ...formData,
-                                  allergenes: [...formData.allergenes, allergene]
-                                });
-                              } else {
-                                setFormData({
-                                  ...formData,
-                                  allergenes: formData.allergenes.filter(a => a !== allergene)
-                                });
-                              }
-                            }}
-                            className="w-4 h-4 bg-gray-700 border-gray-600 text-[#000000] focus:ring-[#000000]"
-                          />
-                          <span className="text-sm text-gray-100">{allergene}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  {formData.allergenes.length > 0 && (
-                    <div className="mt-2">
-                      <p className="text-xs text-[#666666] mb-1">Allergènes sélectionnés:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {formData.allergenes.map((allergene) => (
-                          <span key={allergene} className="bg-red-600 text-white px-2 py-1 text-xs font-semibold">
-                            {allergene}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <p className="text-[#666666]">La gestion des allergènes sera disponible dans une prochaine version</p>
                 </div>
 
                 <div className="flex gap-4 pt-4">
